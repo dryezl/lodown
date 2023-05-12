@@ -22,7 +22,7 @@ get_catalog_nhanes <-
 
 		this_table[ c( 'full_url' , 'doc_url' ) ] <- sapply( this_table[ c( 'full_url' , 'doc_url' ) ] , function( w ) ifelse( is.na( w ) , NA , paste0( "https://wwwn.cdc.gov" , w ) ) )
 
-		catalog <- this_table[ this_table$file_name != 'RDC Only' & this_table$date_published != 'Withdrawn' & this_table$full_url != "https://wwwn.cdc.gov#" , ]
+		catalog <- this_table[ this_table$file_name != 'RDC Only' & this_table$date_published != 'Withdrawn' & !grepl("(spx)|(x_g)|(x_h)$", this_table$full_url) , ]
 
 		# one all years doc hardcode
 		ayd <- catalog[ tolower( catalog$full_url ) == "https://wwwn.cdc.gov/nchs/nhanes/dxa/dxa.aspx" , ]
@@ -36,9 +36,24 @@ get_catalog_nhanes <-
 				doc_url = paste0( "https://wwwn.cdc.gov/Nchs/Nhanes/2005-2006/DXX_D.htm" , "https://wwwn.cdc.gov/Nchs/Data/Nhanes/Dxa/dxx_c.pdf" , "https://wwwn.cdc.gov/Nchs/Data/Nhanes/Dxa/dxx_b.pdf" , "https://wwwn.cdc.gov/Nchs/Data/Nhanes/Dxa/dxx.pdf" ) ,
 				stringsAsFactors = FALSE
 			)
+		# vitamin D file hardcode 
+# https://wwwn.cdc.gov/nchs/nhanes/2001-2002/VID_B.XPT
+		vid_table <- data.frame(
+  years = c("2001-2002", "2003-2004", "2005-2006", "2007-2008", "2009-2010", "2011-2012", "2013-2014", "2015-2016", "2017-2018"),
+  doc_name = c("VID_B Doc", "VID_C Doc", "VID_D Doc", "VID_E Doc", "VID_F Doc", "VID_G Doc", "VID_H Doc", "VID_I Doc", "VID_J Doc"),
+  file_name = c("VID_B Data [XPT - 136.2 KB]", "VID_C Data [XPT - 144.5 KB]", "VID_D Data [XPT - 148.5 KB]", "VID_E Data [XPT - 656.4 KB]", "VID_F Data [XPT - 693.5 KB]", "VID_G Data [XPT - 631.7 KB]", "VID_H Data [XPT - 664.5 KB]", "VID_I Data [XPT - 646.4 KB]", "VID_J Data [XPT - 590.2 KB]"),
+  date_published = c("Updated October 2015", "Updated October 2015", "Updated October 2015", "October 2015", "October 2015", "October 2017", "May 2018", "August 2021", "April 2022"),
+  full_url = c("https://wwwn.cdc.gov/Nchs/Nhanes/2001-2002/VID_B.XPT", "https://wwwn.cdc.gov/Nchs/Nhanes/2003-2004/VID_C.XPT", 
+               "https://wwwn.cdc.gov/Nchs/Nhanes/2005-2006/VID_D.XPT", "https://wwwn.cdc.gov/Nchs/Nhanes/2007-2008/VID_E.XPT", 
+               "https://wwwn.cdc.gov/Nchs/Nhanes/2009-2010/VID_F.XPT", "https://wwwn.cdc.gov/Nchs/Nhanes/2011-2012/VID_G.XPT", 
+               "https://wwwn.cdc.gov/Nchs/Nhanes/2013-2014/VID_H.XPT", "https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/VID_I.XPT", 
+               "https://wwwn.cdc.gov/Nchs/Nhanes/2017-2018/VID_J.XPT"),
+  doc_url = c("https://wwwn.cdc.gov../vitamind/analyticalnote.aspx?b=2001&e=2002&d=VID_B&x=htm", "https://wwwn.cdc.gov../vitamind/analyticalnote.aspx?b=2003&e=2004&d=VID_C&x=htm",  "https://wwwn.cdc.gov../vitamind/analyticalnote.aspx?b=2005&e=2006&d=VID_D&x=htm",  "https://wwwn.cdc.gov../vitamind/analyticalnote.aspx?b=2007&e=2008&d=VID_E&x=htm",  "https://wwwn.cdc.gov../vitamind/analyticalnote.aspx?b=2009&e=2010&d=VID_F&x=htm",  "https://wwwn.cdc.gov/Nchs/Nhanes/2011-2012/VID_G.htm", "https://wwwn.cdc.gov/Nchs/Nhanes/2013-2014/VID_H.htm",  "https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/VID_I.htm", "https://wwwn.cdc.gov/Nchs/Nhanes/2017-2018/VID_J.htm")
+)
 
 		ayd <- merge( ayd , this_ayd )
 
+		ayd <- merge(ayd, vid_table)
 		catalog <- catalog[ tolower( catalog$full_url ) != "https://wwwn.cdc.gov/nchs/nhanes/dxa/dxa.aspx" , ]
 
 		catalog <- rbind( catalog , ayd )
